@@ -3,6 +3,8 @@
 public enum ActivityType
 {
     Inactive = 0,
-    Midi = 1,
-    High = 2
+    Lite = 1,
+    Midi = 2,
+    High = 3,
+    Sport = 4
 }

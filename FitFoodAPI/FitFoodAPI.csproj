@@ -20,9 +20,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\" />
-      <Folder Include="Services\" />
-    </ItemGroup>
-
 </Project>
