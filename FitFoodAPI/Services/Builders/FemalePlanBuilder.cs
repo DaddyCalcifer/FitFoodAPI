@@ -55,6 +55,7 @@ public class FemalePlanBuilder : IPlanBuilder
             default:
                 break;
         }
+        if(bmr < FitConsts.FEMALE_MIN_DAY_KCAL) bmr = FitConsts.FEMALE_MIN_DAY_KCAL;
         _plan.DayKcal = Math.Round(bmr);
     }
 
@@ -64,11 +65,11 @@ public class FemalePlanBuilder : IPlanBuilder
         
         if (_usingType == UsingType.Loss)
         {
-            wml = _data.Weight * 42;
+            wml = _data.Weight * 40;
         }
         else
         {
-            wml = _data.Weight * 35;
+            wml = _data.Weight * 30;
         }
 
         switch (_data.Activity)
@@ -80,6 +81,7 @@ public class FemalePlanBuilder : IPlanBuilder
                 wml *= FitConsts.SPORT_WATER_MULTIPLY;
                 break;
         }
+        if(wml < 2000) wml = 2000;
         _plan.WaterMl = Math.Round(wml);
         return this;
     }
@@ -91,19 +93,61 @@ public class FemalePlanBuilder : IPlanBuilder
 
     public IPlanBuilder bProtein()
     {
-        _plan.Protein = Math.Round(_plan.DayKcal * FitConsts.FEMALE_PROTEIN_PART);
+        _plan.Protein_kcal = Math.Round(_plan.DayKcal *
+                             _usingType switch
+        {
+            UsingType.Loss => FitConsts.LOSS_PFC.Protein,
+            UsingType.Keep => FitConsts.KEEP_PFC.Protein,
+            UsingType.Gain => FitConsts.GAIN_PFC.Protein,
+            _ => FitConsts.KEEP_PFC.Protein
+        });
+        _plan.Protein_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) * _usingType switch
+        {
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Protein * 1.4133,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Protein * 1.3105,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Protein * 0.8854,
+            _ => FitConsts.KEEP_PFC_G.Protein
+        });
         return this;
     }
 
     public IPlanBuilder bCarb()
     {
-        _plan.Carb = Math.Round(_plan.DayKcal * FitConsts.FEMALE_CARB_PART);
+        _plan.Carb_kcal = Math.Round(_plan.DayKcal *
+                                     _usingType switch
+                                     {
+                                         UsingType.Loss => FitConsts.LOSS_PFC.Carb,
+                                         UsingType.Keep => FitConsts.KEEP_PFC.Carb,
+                                         UsingType.Gain => FitConsts.GAIN_PFC.Carb,
+                                         _ => FitConsts.KEEP_PFC.Carb
+                                     });
+        _plan.Carb_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) *  _usingType switch
+        {
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Carb * 1.4133,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Carb * 1.3105,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Carb * 0.8854,
+            _ => FitConsts.KEEP_PFC_G.Carb
+        });
         return this;
     }
 
     public IPlanBuilder bFat()
     {
-        _plan.Fat = Math.Round(_plan.DayKcal * FitConsts.FEMALE_FAT_PART);
+        _plan.Fat_kcal = Math.Round(_plan.DayKcal *
+                                    _usingType switch
+                                    {
+                                        UsingType.Loss => FitConsts.LOSS_PFC.Fat,
+                                        UsingType.Keep => FitConsts.KEEP_PFC.Fat,
+                                        UsingType.Gain => FitConsts.GAIN_PFC.Fat,
+                                        _ => FitConsts.KEEP_PFC.Fat
+                                    });
+        _plan.Fat_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) * _usingType switch
+        {
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Fat * 1.4133,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Fat * 1.3105,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Fat * 0.8854,
+            _ => FitConsts.KEEP_PFC_G.Fat
+        });
         return this;
     }
 
