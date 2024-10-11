@@ -5,6 +5,14 @@ public static class FitConsts
     public const UInt16 MALE_MIN_DAY_KCAL = 1800;
     public const UInt16 FEMALE_MIN_DAY_KCAL = 1200;
     
+    public const double MALE_PROTEIN_PART = 0.25;
+    public const double MALE_FAT_PART = 0.15;
+    public const double MALE_CARB_PART = 0.6;
+    //
+    public const double FEMALE_PROTEIN_PART = 0.25;
+    public const double FEMALE_FAT_PART = 0.25;
+    public const double FEMALE_CARB_PART = 0.5;
+    
     public const double INACTIVE_MULTIPLY = 1.2f;
     public const double LITE_MULTIPLY = 1.375f;
     public const double MIDI_MULTIPLY = 1.55f;

@@ -8,20 +8,8 @@ namespace FitFoodAPI.Controllers;
 [Route("api/calculator")]
 public class CalculationController
 {
-    private readonly PlanCalculatorService _planCalculatorService;
-
-    public CalculationController()
-    {
-        _planCalculatorService = new PlanCalculatorService();
-    }
+    private readonly PlanCalculatorService _planCalculatorService = new();
 
     [HttpGet("bmr")]
-    public JsonResult CalculateBMR([FromBody]FitData data)
-    {
-        FitPlan plan = new FitPlan();
-        plan.DayKcal = Math.Round(_planCalculatorService.CalculateCaloriesPerDay(data));
-        plan.DurationInDays = 10;
-        plan.WaterMl = Math.Round(_planCalculatorService.CalculateWaterPerDay(data));
-        return new JsonResult(plan);
-    }
+    public JsonResult CalculateBmr([FromBody]FitData data) => new JsonResult(_planCalculatorService.CalculateFullPlan(data));
 }
