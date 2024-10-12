@@ -1,4 +1,5 @@
-﻿using FitFoodAPI.Models;
+﻿using FitFoodAPI.Database.Contexts;
+using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
 using FitFoodAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,16 @@ namespace FitFoodAPI.Controllers;
 public class CalculationController
 {
     private readonly PlanCalculatorService _planCalculatorService = new();
+    private readonly UserService _userService = new();
 
-    [HttpGet("bmr")]
-    public JsonResult CalculateBmr([FromBody]FitData data, [FromHeader(Name = "UsingType")]UsingType usingType=UsingType.Keep) 
-        => new JsonResult(_planCalculatorService.CalculateFullPlan(data, usingType));
+    [HttpPost("full")]
+    public async Task<JsonResult> CalculateBmr([FromBody]FitData data,
+        [FromHeader(Name = "User")]Guid userId,
+        [FromHeader(Name = "UsingType")]UsingType usingType=UsingType.Keep)
+    {
+        var planId = await _planCalculatorService.CalculateFullPlan(userId, data, usingType);
+        
+        Console.WriteLine($"Plan {planId} has been built for user {userId}");
+        return new JsonResult(planId);
+    }
 }

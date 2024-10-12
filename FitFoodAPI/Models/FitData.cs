@@ -1,18 +1,20 @@
-﻿using FitFoodAPI.Models.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using FitFoodAPI.Models.Enums;
 
 namespace FitFoodAPI.Models;
 
 public class FitData
 {
+    public Guid Id { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
     public int Age { get; set; }
     public Gender Gender { get; set; }
     public ActivityType Activity { get; set; }
-    public DateTime CreatedAt { get; }
-    public DateTime UpdatedAt { get; set; }
     
+    [ForeignKey("User")]
     public Guid UserId { get; set; }
+    public User? User { get; set; }
 
     public double ActivityAsMultiply() =>
         Activity switch
@@ -27,7 +29,7 @@ public class FitData
 
     public FitData()
     {
-        CreatedAt = UpdatedAt = DateTime.Now;
+        //CreatedAt = UpdatedAt = DateTimeKind.Utc;
     }
 
     public FitData(float weight, float height, int age, Gender gender, ActivityType activity)
@@ -37,6 +39,6 @@ public class FitData
         Age = age;
         Gender = gender;
         Activity = activity;
-        CreatedAt = UpdatedAt = DateTime.Now;
+        //CreatedAt = UpdatedAt = DateTimeKind.Utc;
     }
 }

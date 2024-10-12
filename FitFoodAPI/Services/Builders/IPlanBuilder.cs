@@ -10,5 +10,6 @@ public interface IPlanBuilder
     public abstract IPlanBuilder bProtein();
     public abstract IPlanBuilder bCarb();
     public abstract IPlanBuilder bFat();
+
     public abstract FitPlan build(); 
 }

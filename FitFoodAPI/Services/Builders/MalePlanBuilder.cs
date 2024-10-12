@@ -101,11 +101,14 @@ public class MalePlanBuilder : IPlanBuilder
             UsingType.Gain => FitConsts.GAIN_PFC.Protein,
             _ => FitConsts.KEEP_PFC.Protein
         });
-        _plan.Protein_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) * _usingType switch
+        _plan.Protein_g = Math.Round(_data.Weight 
+                                     * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) 
+                                     * _data.ActivityAsMultiply()
+                                     * _usingType switch
         {
-            UsingType.Loss => FitConsts.LOSS_PFC_G.Protein * 1.4133,
-            UsingType.Keep => FitConsts.KEEP_PFC_G.Protein * 1.3105,
-            UsingType.Gain => FitConsts.GAIN_PFC_G.Protein * 0.8854,
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Protein,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Protein,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Protein,
             _ => FitConsts.KEEP_PFC_G.Protein
         });
         return this;
@@ -121,11 +124,14 @@ public class MalePlanBuilder : IPlanBuilder
                                          UsingType.Gain => FitConsts.GAIN_PFC.Carb,
                                          _ => FitConsts.KEEP_PFC.Carb
                                      });
-        _plan.Carb_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) *  _usingType switch
+        _plan.Carb_g = Math.Round(_data.Weight 
+                                  * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType)
+                                  * _data.ActivityAsMultiply()
+                                  *  _usingType switch
         {
-            UsingType.Loss => FitConsts.LOSS_PFC_G.Carb * 1.4133,
-            UsingType.Keep => FitConsts.KEEP_PFC_G.Carb * 1.3105,
-            UsingType.Gain => FitConsts.GAIN_PFC_G.Carb * 0.8854,
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Carb,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Carb,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Carb,
             _ => FitConsts.KEEP_PFC_G.Carb
         });
         return this;
@@ -141,15 +147,22 @@ public class MalePlanBuilder : IPlanBuilder
                                         UsingType.Gain => FitConsts.GAIN_PFC.Fat,
                                         _ => FitConsts.KEEP_PFC.Fat
                                     });
-        _plan.Fat_g = Math.Round(_data.Weight * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) * _usingType switch
+        _plan.Fat_g = Math.Round(_data.Weight 
+                                 * FitConsts.USING_TYPE_AS_MULTIPLY(_usingType) 
+                                 * _data.ActivityAsMultiply()
+                                 * _usingType switch
         {
-            UsingType.Loss => FitConsts.LOSS_PFC_G.Fat * 1.4133,
-            UsingType.Keep => FitConsts.KEEP_PFC_G.Fat * 1.3105,
-            UsingType.Gain => FitConsts.GAIN_PFC_G.Fat * 0.8854,
+            UsingType.Loss => FitConsts.LOSS_PFC_G.Fat,
+            UsingType.Keep => FitConsts.KEEP_PFC_G.Fat,
+            UsingType.Gain => FitConsts.GAIN_PFC_G.Fat,
             _ => FitConsts.KEEP_PFC_G.Fat
         });
         return this;
     }
 
-    public FitPlan build() => _plan;
+    public FitPlan build()
+    {
+        _plan.UserId = _data.UserId;
+        return _plan;
+    }
 }

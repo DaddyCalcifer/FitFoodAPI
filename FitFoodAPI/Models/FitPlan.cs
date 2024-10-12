@@ -1,7 +1,10 @@
-﻿namespace FitFoodAPI.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FitFoodAPI.Models;
 
 public class FitPlan
 {
+    public Guid Id { get; set; }
     public double DayKcal { get; set; }
     public int DurationInDays { get; set; }
     public double WaterMl { get; set; }
@@ -14,7 +17,10 @@ public class FitPlan
     public double Protein_g { get; set; }
     public double Carb_g { get; set; }
     
+    [ForeignKey("User")]
     public Guid UserId { get; set; }
+    public User? User { get; set; }
+
     
     public double BreakfastKcal => Math.Round(DayKcal*0.3);
     public double LunchKcal => Math.Round(DayKcal*0.4);

@@ -6,9 +6,9 @@ public static class FitConsts
 {
     public class PfcProp(double protein, double fat, double carb)
     {
-        public double Protein { get; set; } = protein;
-        public double Fat { get; set; } = fat;
-        public double Carb { get; set; } = carb;
+        public double Protein { get; set; } = protein / INACTIVE_MULTIPLY;
+        public double Fat { get; set; } = fat / INACTIVE_MULTIPLY;
+        public double Carb { get; set; } = carb / INACTIVE_MULTIPLY;
     }
     
     public const UInt16 MALE_MIN_DAY_KCAL = 1800;
