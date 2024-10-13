@@ -17,6 +17,9 @@ public class FitPlan
     public double Protein_g { get; set; }
     public double Carb_g { get; set; }
     
+    public bool isPublic { get; set; } = false;
+    public bool isDeleted { get; set; } = false;
+    
     [ForeignKey("User")]
     public Guid UserId { get; set; }
     public User? User { get; set; }

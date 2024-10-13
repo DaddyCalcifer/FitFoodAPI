@@ -13,5 +13,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(x => x.User);
         builder.HasMany(x => x.Plans)
             .WithOne(x => x.User);
+        builder.HasIndex(u => u.Username).IsUnique();
+        builder.HasIndex(e => e.Email).IsUnique();
     }
 }

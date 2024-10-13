@@ -21,6 +21,8 @@ public class FitData
     public string? UpdatedAt { get; set; }
     public string? CreatedAt { get; set; }
 
+    public bool IsDeleted { get; set; } = false;
+
     public double ActivityAsMultiply() =>
         Activity switch
         {

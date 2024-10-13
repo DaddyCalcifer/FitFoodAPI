@@ -12,7 +12,7 @@ public class PlanCalculatorService
 {
     private PlanDirector _planDirector;
 
-    public async Task<HttpStatusCode> CalculateFullPlan(Guid userId, FitData data, UsingType usingType= UsingType.Keep)
+    public async Task<FitPlan> CalculateFullPlan(Guid userId, FitData data, UsingType usingType= UsingType.Keep)
     {
         _planDirector = new PlanDirector(data, usingType);
         var builtPlan = _planDirector.BuildPlan();
@@ -21,7 +21,7 @@ public class PlanCalculatorService
         {
             var user = await context.Users.FirstOrDefaultAsync(c => c.Id == userId);
             
-            if (user == null) return HttpStatusCode.NotFound;
+            if (user == null) return null;
             
             user.Plans.Add(builtPlan);
             context.Users.Update(user);
@@ -29,14 +29,15 @@ public class PlanCalculatorService
             await context.SaveChangesAsync();
         }
         
-        return HttpStatusCode.OK;
+        return builtPlan;
     }
 
-    public FitPlan GetPlan(Guid planId)
+    public async Task<FitPlan> GetPlan(Guid planId, Guid userId)
     {
-        using (var context = new FitEntitiesContext())
+        await using (var context = new FitEntitiesContext())
         {
-            var fitPlans = context.Plans.FirstOrDefault(e => e.Id == planId);
+            var fitPlans = await context.Plans.FirstOrDefaultAsync(e => e.Id == planId);
+            if(fitPlans.UserId != userId && !fitPlans.isPublic) return null;
             return fitPlans;
         }
     }
