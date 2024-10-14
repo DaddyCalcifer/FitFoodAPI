@@ -20,6 +20,7 @@ public class CalculationController
         [FromHeader(Name = "UsingType")]UsingType usingType=UsingType.Keep)
     {
         var plan = await _planCalculatorService.CalculateFullPlan(userId, data, usingType);
+        plan.User = null;
         
         Console.WriteLine($"Plan {plan.Id} has been built for user {userId}");
         return new OkObjectResult(plan);

@@ -18,14 +18,23 @@ public class UserController
         return new JsonResult(await _service.GetAll());
     }
     [HttpPost("create")]
-    public async Task<JsonResult> CreateUser([FromBody] User user)
+    public async Task<IActionResult> CreateUser([FromBody] User user)
     {
-        return new JsonResult(await _service.CreateUser(user));
+        return new OkObjectResult(await _service.CreateUser(user));
     }
     [HttpGet("all/{userId:guid}")]
-    public async Task<JsonResult> GetByInd(Guid userId)
+    public async Task<IActionResult> GetByInd(Guid userId)
     {
-        return new JsonResult(await _service.GetById(userId));
+        var user_ = await _service.GetById(userId);
+        if (user_ == null) return new NotFoundResult();
+        return new OkObjectResult(user_);
+    }
+    [HttpPatch("authorize")]
+    public async Task<IActionResult> Authorize([FromBody] AuthRequest request)
+    {
+        var result = await _service.Authorize(request);
+        if (result == null) return new NotFoundResult();
+        return new OkObjectResult(result);
     }
     [HttpPut("data")]
     public async Task<JsonResult> AddData([FromBody] FitData data, [FromHeader(Name = "User")] Guid userId)

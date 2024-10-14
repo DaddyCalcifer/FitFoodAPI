@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Nautilus\\RiderProjects\\FitFoodAPI\\",
+  "WorkspaceRootPath": "C:\\Users\\Nikita\\Desktop\\DIPLOM\\FitFoodAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E93559CD-8685-4942-9AD4-3C94FAE140CE}|FitFoodAPI\\FitFoodAPI.csproj|c:\\users\\nautilus\\riderprojects\\fitfoodapi\\fitfoodapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E93559CD-8685-4942-9AD4-3C94FAE140CE}|FitFoodAPI\\FitFoodAPI.csproj|c:\\users\\nikita\\desktop\\diplom\\fitfoodapi\\fitfoodapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E93559CD-8685-4942-9AD4-3C94FAE140CE}|FitFoodAPI\\FitFoodAPI.csproj|solutionrelative:fitfoodapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Nautilus\\RiderProjects\\FitFoodAPI\\FitFoodAPI\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Nikita\\Desktop\\DIPLOM\\FitFoodAPI\\FitFoodAPI\\Program.cs",
               "RelativeDocumentMoniker": "FitFoodAPI\\Program.cs",
-              "ToolTip": "C:\\Users\\Nautilus\\RiderProjects\\FitFoodAPI\\FitFoodAPI\\Program.cs",
+              "ToolTip": "C:\\Users\\Nikita\\Desktop\\DIPLOM\\FitFoodAPI\\FitFoodAPI\\Program.cs",
               "RelativeToolTip": "FitFoodAPI\\Program.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAKAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-10T13:15:57.038Z",
               "EditorCaption": ""
