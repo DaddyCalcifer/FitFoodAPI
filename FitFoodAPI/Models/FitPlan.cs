@@ -24,6 +24,7 @@ public class FitPlan
     public Guid UserId { get; set; }
     public User? User { get; set; }
 
+    public ICollection<PlanComment> Comments { get; set; } = new List<PlanComment>();
     
     public double BreakfastKcal => Math.Round(DayKcal*0.3);
     public double LunchKcal => Math.Round(DayKcal*0.4);

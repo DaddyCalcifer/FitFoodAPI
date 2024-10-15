@@ -12,5 +12,7 @@ public class PlanConfiguration : IEntityTypeConfiguration<FitPlan>
         builder.HasOne(x => x.User)
             .WithMany(x => x.Plans)
             .HasForeignKey(x => x.UserId);
+        builder.HasMany(x => x.Comments)
+            .WithOne(x => x.FitPlan);
     }
 }

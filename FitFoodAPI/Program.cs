@@ -19,7 +19,7 @@ app.MapControllers();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello World!");
-
+app.MapGet("/token", AuthOptions.GetSymmetricSecurityKey);
 
 
 app.Run();

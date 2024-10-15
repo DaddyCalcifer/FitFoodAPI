@@ -6,6 +6,7 @@ using FitFoodAPI.Models.Enums;
 using FitFoodAPI.Services.Builders;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
+using FitFoodAPI.Models.Requests;
 
 namespace FitFoodAPI.Services;
 

@@ -10,16 +10,14 @@ namespace FitFoodAPI.Services;
 
 public class PlanCalculatorService
 {
-    private PlanDirector _planDirector;
-
     public async Task<FitPlan> CalculateFullPlan(Guid userId, FitData data, UsingType usingType= UsingType.Keep)
     {
-        _planDirector = new PlanDirector(data, usingType);
-        var builtPlan = _planDirector.BuildPlan();
+        var planDirector = new PlanDirector(data, usingType);
+        var builtPlan = planDirector.BuildPlan();
         
         await using(var context = new FitEntitiesContext())
         {
-            var user = await context.Users.FirstOrDefaultAsync(c => c.Id == userId);
+            User? user = await context.Users.FirstOrDefaultAsync(c => c.Id == userId);
             
             if (user == null) return null;
             
@@ -39,6 +37,39 @@ public class PlanCalculatorService
             var fitPlans = await context.Plans.FirstOrDefaultAsync(e => e.Id == planId);
             if(fitPlans.UserId != userId && !fitPlans.isPublic) return null;
             return fitPlans;
+        }
+    }
+    
+    public async Task<List<PlanComment>?> GetPlanComments(Guid planId, Guid userId)
+    {
+        await using (var context = new FitEntitiesContext())
+        {
+            var fitPlans = await context.Plans
+                .Include(x=>x.Comments)
+                .FirstOrDefaultAsync(e => e.Id == planId);
+            
+            if(fitPlans.UserId != userId && !fitPlans.isPublic) return null;
+            
+            return fitPlans.Comments.ToList();
+        }
+    }
+    
+    public async Task<PlanRating?> GetPlanRating(Guid planId)
+    {
+        await using (var context = new FitEntitiesContext())
+        {
+            var fitPlan = await context.Plans
+                .Include(c => c.Comments)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == planId);
+            
+            if(fitPlan == null) return null;
+            if(!fitPlan.isPublic) return null;
+            
+            return new PlanRating(
+                fitPlan.Comments.Average(c=>c.Rating), 
+                fitPlan.Comments.Count
+                );
         }
     }
 }
