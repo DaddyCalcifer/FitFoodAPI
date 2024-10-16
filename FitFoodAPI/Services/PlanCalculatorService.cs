@@ -30,7 +30,7 @@ public class PlanCalculatorService
         return builtPlan;
     }
 
-    public async Task<FitPlan> GetPlan(Guid planId, Guid userId)
+    public async Task<FitPlan?> GetPlan(Guid planId, Guid userId)
     {
         await using (var context = new FitEntitiesContext())
         {

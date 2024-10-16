@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
 using FitFoodAPI.Database;
 using FitFoodAPI.Database.Contexts;
 using FitFoodAPI.Models;
@@ -7,6 +9,7 @@ using FitFoodAPI.Services.Builders;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
 using FitFoodAPI.Models.Requests;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FitFoodAPI.Services;
 
@@ -26,11 +29,11 @@ public class UserService()
         }
     }
 
-    public async Task<Guid?> Authorize(AuthRequest request)
+    public async Task<string?> Authorize(AuthRequest request)
     {
         await using (var context = new FitEntitiesContext())
         {
-            User? _user = await context.Users
+            var _user = await context.Users
                 .AsNoTracking()
                 .Where(x => 
                     x.Username == request.Login || x.Email == request.Login)
@@ -41,8 +44,16 @@ public class UserService()
             }
             else
             {
-                if (BCrypt.Net.BCrypt.Verify(request.Password, _user.Password))
-                    return _user.Id;
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, _user.Password)) return null;
+                var claims = new List<Claim> { new Claim(ClaimTypes.Sid, _user.Id.ToString()) };
+                var jwt = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    claims: claims,
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+                );
+                return new JwtSecurityTokenHandler().WriteToken(jwt);
             }
         }
 
@@ -61,6 +72,17 @@ public class UserService()
     }
 
     public async Task<User?> GetById(Guid id)
+    {
+        await using (var context = new FitEntitiesContext())
+        {
+            return await context.Users
+                .Include(u => u.Datas)
+                .Include(u => u.Plans)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id);
+        }
+    }
+    public async Task<User?> GetById_lite(Guid id)
     {
         await using (var context = new FitEntitiesContext())
         {
