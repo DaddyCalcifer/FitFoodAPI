@@ -45,32 +45,58 @@ public class UserController : ControllerBase
     [Authorize]
     public async Task<JsonResult> AddData([FromBody] FitData data)
     {
-        // Извлекаем userId из токена
         var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
         {
-            return new JsonResult(new { error = "Token is incorrect!" }) { StatusCode = 401 };
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
         }
 
         await _service.AddData(userId, data);
         return new JsonResult(new {message = "Data addiction success!"}) { StatusCode = StatusCodes.Status201Created };
+    }
+    [HttpPatch("settings")]
+    [Authorize]
+    public async Task<JsonResult> ChangeSettings([FromBody] User data)
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
+        }
+        data.Id = userId;
+
+        await _service.UpdateUserData(data);
+        return new JsonResult(new {message = "Data was updated!"}) { StatusCode = StatusCodes.Status205ResetContent };
+    }
+    [HttpPatch("repassword")]
+    [Authorize]
+    public async Task<JsonResult> ChangePassword([FromBody] RePasswordRequest data)
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
+        }
+        data.UserId = userId;
+
+        await _service.UpdatePassword(data);
+        return new JsonResult(new {message = "Data was updated!"}) { StatusCode = StatusCodes.Status205ResetContent };
     }
 
     [HttpGet]
     [Authorize]
     public async Task<JsonResult> Self()
     {
-        // Извлекаем userId из токена
         var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
         {
-            return new JsonResult(new { error = "Token is incorrect!" }) { StatusCode = 401 };
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
         }
         
         var user = await _service.GetById(userId);
         
         return user == null ? 
-            new JsonResult(new {error = "Not found!" }) { StatusCode = StatusCodes.Status404NotFound } : 
-            new JsonResult(new { user = user }) { StatusCode = StatusCodes.Status200OK };
+            new JsonResult(new {message = "Not found!" }) { StatusCode = StatusCodes.Status404NotFound } : 
+            new JsonResult(user) { StatusCode = StatusCodes.Status200OK };
     }
 }

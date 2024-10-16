@@ -24,6 +24,19 @@ public class FitPlan
     public Guid UserId { get; set; }
     public User? User { get; set; }
 
+    public void Reset(FitPlan plan)
+    {
+        this.DayKcal = plan.DayKcal;
+        this.DurationInDays = plan.DurationInDays;
+        this.WaterMl = plan.WaterMl;
+        this.Carb_g = plan.Carb_g;
+        this.Protein_g = plan.Protein_g;
+        this.Fat_g = plan.Fat_g;
+        this.Carb_kcal = plan.Carb_kcal;
+        this.Protein_kcal = plan.Protein_kcal;
+        this.Fat_kcal = plan.Fat_kcal;
+    }
+
     public ICollection<PlanComment> Comments { get; set; } = new List<PlanComment>();
     
     public double BreakfastKcal => Math.Round(DayKcal*0.3);

@@ -23,28 +23,34 @@ public class CommentService
         return 1;
     }
 
-    public async Task<int> DeleteComment(Guid id)
+    public async Task<bool> DeleteComment(Guid commentId, Guid userId)
     {
         await using(var context = new FitEntitiesContext())
         {
-            var comment = await context.Comments.FirstOrDefaultAsync(c => c.Id == id);
+            var comment = await context.Comments
+                .Include(c => c.FitPlan)
+                .FirstOrDefaultAsync(c => c.Id == commentId);
             
-            if (comment == null) return 0;
+            if (comment == null) return false;
+            if(comment.UserId != userId)
+                if(comment.FitPlan.UserId != userId)
+                    return false;
             
             comment.IsDeleted = true;
             context.Comments.Update(comment);
             
             await context.SaveChangesAsync();
         }
-        return 1;
+        return true;
     }
-    public async Task<int> EditComment(Guid id, EditCommentRequest newData)
+    public async Task<bool> EditComment(Guid id, Guid userId, EditCommentRequest newData)
     {
         await using(var context = new FitEntitiesContext())
         {
             var comment = await context.Comments.FirstOrDefaultAsync(c => c.Id == id);
             
-            if (comment == null) return 0;
+            if (comment == null) return false;
+            if (comment.UserId != userId) return false;
             
             comment.Text = newData.Text;
             comment.Rating = newData.Rating;
@@ -53,6 +59,6 @@ public class CommentService
             
             await context.SaveChangesAsync();
         }
-        return 1;
+        return true;
     }
 }

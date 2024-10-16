@@ -29,6 +29,41 @@ public class UserService()
         }
     }
 
+    public async Task<User?> UpdateUserData(User user)
+    {
+        await using (var context = new FitEntitiesContext())
+        {
+            var oldData = await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (oldData == null) return null;
+            
+            oldData.Email = user.Email;
+            oldData.Username = user.Username;
+            
+            context.Users.Update(oldData);
+            await context.SaveChangesAsync();
+            return user;
+        }
+    }
+
+    public async Task<bool> UpdatePassword(RePasswordRequest request)
+    {
+        await using (var context = new FitEntitiesContext())
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+            if (user == null) return false;
+
+            if (BCrypt.Net.BCrypt.Verify(request.OldPassword, user.Password))
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            }
+            else return false;
+            
+            context.Users.Update(user);
+            await context.SaveChangesAsync();
+            return true;
+        }
+    }
+
     public async Task<string?> Authorize(AuthRequest request)
     {
         await using (var context = new FitEntitiesContext())
@@ -92,19 +127,19 @@ public class UserService()
         }
     }
     
-    public async Task<HttpStatusCode> AddData(Guid userId, FitData data)
+    public async Task<bool> AddData(Guid userId, FitData data)
     {
         await using(var context = new FitEntitiesContext())
         {
             var user = await context.Users.FirstOrDefaultAsync(c => c.Id == userId);
             
-            if (user == null) return HttpStatusCode.NotFound;
+            if (user == null) return false;
             
             user.Datas.Add(data);
             context.Users.Update(user);
             
             await context.SaveChangesAsync();
         }
-        return HttpStatusCode.OK;
+        return true;
     }
 }
