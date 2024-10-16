@@ -36,7 +36,7 @@ public class FitData
 
     public FitData()
     {
-        CreatedAt = UpdatedAt = DateTime.UtcNow.ToString();
+        CreatedAt = UpdatedAt = DateTime.UtcNow.ToString("dd.MM.yyyy");
     }
 
     public FitData(float weight, float height, int age, Gender gender, ActivityType activity)
@@ -46,6 +46,6 @@ public class FitData
         Age = age;
         Gender = gender;
         Activity = activity;
-        CreatedAt = UpdatedAt = DateTime.UtcNow.ToString();
+        CreatedAt = UpdatedAt = DateTime.UtcNow.ToString("dd.MM.yyyy");
     }
 }
