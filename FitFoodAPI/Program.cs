@@ -1,7 +1,10 @@
 using FitFoodAPI;
+using FitFoodAPI.Models;
+using FitFoodAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using OpenFoodFacts4Net.Json.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +44,17 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/token", AuthOptions.GetSymmetricSecurityKey);
-
+app.MapGet("/product/{barcode}", async (string barcode) =>
+{
+    try
+    {
+        var product = await OpenFoodFactsClient.GetProductByBarcodeAsync(barcode);
+        return product == null ? Results.NotFound() : Results.Ok(product);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound(new { Message = ex.Message });
+    }
+});
 
 app.Run();
