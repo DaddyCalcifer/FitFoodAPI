@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using FitFoodAPI.Database.Contexts;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
@@ -11,7 +12,7 @@ namespace FitFoodAPI.Controllers;
 
 [ApiController]
 [Route("api/user")]
-public class UserController : ControllerBase
+public partial class UserController : ControllerBase
 {
     private readonly UserService _service = new();
 
@@ -22,9 +23,21 @@ public class UserController : ControllerBase
         return new JsonResult(await _service.GetAll());
     }
     [HttpPost("create")]
-    public async Task<IActionResult> CreateUser([FromBody] User user)
+    public async Task<JsonResult> CreateUser([FromBody] User user)
     {
-        return new OkObjectResult(await _service.CreateUser(user));
+        if(user.Username.Length < 3 || user.Username.Length > 20) 
+            return new JsonResult(new { message = "Ошибка регистрации: логин должен состоять из 3-20 символов!" }) 
+                { StatusCode = StatusCodes.Status400BadRequest };
+        if(user.Password.Length < 5 || user.Password.Length > 20) 
+            return new JsonResult(new { message = "Ошибка регистрации: пароль должен состоять из 5-20 символов!" }) 
+                { StatusCode = StatusCodes.Status400BadRequest };
+        if (!EmailRegex().IsMatch(user.Email))
+            return new JsonResult(new { message = "Ошибка регистрации: неверный формат email!" }) 
+                { StatusCode = StatusCodes.Status400BadRequest };
+        
+        var result = await _service.CreateUser(user);
+        return result != null ? new JsonResult(new { message = "Пользователь успешно зарегестрирован" }) { StatusCode = StatusCodes.Status201Created } 
+            : new JsonResult(new { message = "При регистрации возникла ошибка, логин или e-mail занят." }) { StatusCode = StatusCodes.Status400BadRequest };
     }
     [HttpGet("all/{userId:guid}")]
     [Authorize]
@@ -35,11 +48,15 @@ public class UserController : ControllerBase
         return new OkObjectResult(user_);
     }
     [HttpPatch("authorize")]
-    public async Task<IActionResult> Authorize([FromBody] AuthRequest request)
+    public async Task<JsonResult> Authorize([FromBody] AuthRequest request)
     {
+        if(request.Login.Length < 2 || request.Login.Length > 20) 
+            return new JsonResult(new { value = "", message = "Ошибка авторизации: проверьте данные!" }) { StatusCode = 401 };
+        if(request.Password.Length < 5) 
+            return new JsonResult(new { value = "", message = "Ошибка авторизации: проверьте данные!" }) { StatusCode = 401 };
         var result = await _service.Authorize(request);
-        if (result == null) return new UnauthorizedResult();
-        return new OkObjectResult(result);
+        return result != "" ? new JsonResult(new { value = result, message = "Успешно авторизован!" }) { StatusCode = 200 } 
+            : new JsonResult(new { value = "", message = "Ошибка авторизации: проверьте данные!" }) { StatusCode = 401 };
     }
     [HttpPut("data")]
     [Authorize]
@@ -99,4 +116,7 @@ public class UserController : ControllerBase
             new JsonResult(new {message = "Not found!" }) { StatusCode = StatusCodes.Status404NotFound } : 
             new JsonResult(user) { StatusCode = StatusCodes.Status200OK };
     }
+
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
+    private static partial Regex EmailRegex();
 }
