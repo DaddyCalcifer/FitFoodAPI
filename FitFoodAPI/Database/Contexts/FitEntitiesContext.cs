@@ -11,6 +11,7 @@ public class FitEntitiesContext : DbContext
     public DbSet<FitPlan> Plans { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<PlanComment> Comments { get; set; }
+    public DbSet<FeedAct> FeedActs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

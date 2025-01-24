@@ -16,13 +16,16 @@ namespace FitFoodAPI.Services;
 public class UserService()
 {
 
-    public async Task<User> CreateUser(User user)
+    public async Task<User?> CreateUser(User user)
     {
         user.Plans = new List<FitPlan>();
         user.Datas = new List<FitData>();
+        user.FeedActs = new List<FeedAct>();
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         await using (var context = new FitEntitiesContext())
         {
+            if(context.Users.Any(u => u.Email == user.Email) || context.Users.Any(u => u.Username == user.Username))
+                return null;
             context.Users.Add(user);
             await context.SaveChangesAsync();
             return user;
@@ -75,24 +78,22 @@ public class UserService()
                 .FirstOrDefaultAsync();
             if (_user == null)
             {
-                return null;
+                return "";
             }
             else
             {
-                if (!BCrypt.Net.BCrypt.Verify(request.Password, _user.Password)) return null;
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, _user.Password)) return "";
                 var claims = new List<Claim> { new Claim(ClaimTypes.Sid, _user.Id.ToString()) };
                 var jwt = new JwtSecurityToken(
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
                     claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)),
                     signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
                 );
                 return new JwtSecurityTokenHandler().WriteToken(jwt);
             }
         }
-
-        return null;
     }
     public async Task<List<User>> GetAll()
     {
@@ -102,6 +103,7 @@ public class UserService()
                 .AsNoTracking()
                 .Include(x => x.Plans)
                 .Include(x => x.Datas)
+                .Include(x => x.FeedActs)
                 .ToListAsync();
         }
     }
@@ -113,6 +115,7 @@ public class UserService()
             return await context.Users
                 .Include(u => u.Datas)
                 .Include(u => u.Plans)
+                .Include(x => x.FeedActs)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
         }

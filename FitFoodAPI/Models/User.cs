@@ -15,4 +15,5 @@ public class User(string username, string password, string email = "")
     
     public ICollection<FitPlan> Plans { get; set; } = new List<FitPlan>();
     public ICollection<FitData> Datas { get; set; } = new List<FitData>();
+    public ICollection<FeedAct> FeedActs { get; set; } = new List<FeedAct>();
 }

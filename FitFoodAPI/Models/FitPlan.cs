@@ -39,8 +39,9 @@ public class FitPlan
 
     public ICollection<PlanComment> Comments { get; set; } = new List<PlanComment>();
     
-    public double BreakfastKcal => Math.Round(DayKcal*0.3);
-    public double LunchKcal => Math.Round(DayKcal*0.4);
-    public double DinnerKcal => Math.Round(DayKcal*0.3);
+    public double BreakfastKcal => Math.Round(DayKcal*0.275);
+    public double LunchKcal => Math.Round(DayKcal*0.35);
+    public double DinnerKcal => Math.Round(DayKcal*0.275);
+    public double OtherKcal => Math.Round(DayKcal*0.10);
     
 }

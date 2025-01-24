@@ -3,6 +3,7 @@ using System;
 using FitFoodAPI.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitFoodAPI.Migrations
 {
     [DbContext(typeof(FitEntitiesContext))]
-    partial class FitEntitiesContextModelSnapshot : ModelSnapshot
+    [Migration("20241112144610_otherKcal")]
+    partial class otherKcal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,48 +24,6 @@ namespace FitFoodAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FitFoodAPI.Models.FeedAct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Carb100")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Fat100")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("FeedType")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("Kcal100")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Mass")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Protein100")
-                        .HasColumnType("double precision");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FeedActs");
-                });
 
             modelBuilder.Entity("FitFoodAPI.Models.FitData", b =>
                 {
@@ -226,17 +187,6 @@ namespace FitFoodAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("FitFoodAPI.Models.FeedAct", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.User", "User")
-                        .WithMany("FeedActs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FitFoodAPI.Models.FitData", b =>
                 {
                     b.HasOne("FitFoodAPI.Models.User", "User")
@@ -286,8 +236,6 @@ namespace FitFoodAPI.Migrations
             modelBuilder.Entity("FitFoodAPI.Models.User", b =>
                 {
                     b.Navigation("Datas");
-
-                    b.Navigation("FeedActs");
 
                     b.Navigation("Plans");
                 });
