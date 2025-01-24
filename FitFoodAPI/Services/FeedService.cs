@@ -65,6 +65,17 @@ public class FeedService
                 .ToListAsync();
         }
     }
+    public async Task<List<FeedAct>> GetAllByDateAndType(Guid userId, string date, FeedType type)
+    {
+        await using(var context = new FitEntitiesContext())
+        {
+            return await context.FeedActs
+                .Where(c => c.UserId == userId 
+                            && c.Date.Trim() == date.Trim()
+                            && c.FeedType == type)
+                .ToListAsync();
+        }
+    }
     public async Task<FeedStats> GetFeedStatsByType(Guid userId, string date, FeedType feedType)
     {
         await using (var context = new FitEntitiesContext())
@@ -121,7 +132,11 @@ public class FeedService
                 AteProtein = protein,
                 AteCarb = carb,
                 AteFat = fat,
-                AteKcal = kcal
+                AteKcal = kcal,
+                AteDinner = getEatingsKcal(userId, date, FeedType.Dinner),
+                AteLunch = getEatingsKcal(userId, date, FeedType.Lunch),
+                AteBreakfast = getEatingsKcal(userId, date, FeedType.Breakfast),
+                AteOther = getEatingsKcal(userId, date, FeedType.Other),
             };
         }
     }
@@ -147,5 +162,26 @@ public class FeedService
             await context.SaveChangesAsync();
         }
         return true;
+    }
+
+    double getEatingsKcal(Guid userId, string date, FeedType feedType)
+    {
+        using (var context = new FitEntitiesContext())
+        {
+            var query = context.FeedActs
+                .Where(c => c.UserId == userId && c.Date == date.Trim() && c.FeedType == feedType);
+
+            double sum = 0;
+
+            if (query.Any())
+            {
+                var feeds =  query.ToList();
+                foreach (var feed in feeds)
+                {
+                    sum += feed.Kcal;
+                }
+            }
+            return sum;
+        }
     }
 }

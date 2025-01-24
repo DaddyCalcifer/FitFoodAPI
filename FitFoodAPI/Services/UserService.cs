@@ -103,7 +103,6 @@ public class UserService()
                 .AsNoTracking()
                 .Include(x => x.Plans)
                 .Include(x => x.Datas)
-                .Include(x => x.FeedActs)
                 .ToListAsync();
         }
     }
@@ -115,7 +114,6 @@ public class UserService()
             return await context.Users
                 .Include(u => u.Datas)
                 .Include(u => u.Plans)
-                .Include(x => x.FeedActs)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
