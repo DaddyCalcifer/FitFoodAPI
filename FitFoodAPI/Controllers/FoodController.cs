@@ -113,6 +113,45 @@ public class FoodController : ControllerBase
         
         return new JsonResult(feed) { StatusCode = StatusCodes.Status200OK };
     }
+    [HttpGet]
+    [Authorize]
+    public async Task<JsonResult> GetFeeds()
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
+        }
+        
+        var feed = await feedService.GetAllByDate(userId, DateTime.UtcNow.ToString("dd.MM.yyyy"));
+        return feed.Count == 0 ? 
+            new JsonResult(new { message = "Feed data not found!" }) { StatusCode = 404 } : 
+            new JsonResult(feed) { StatusCode = StatusCodes.Status200OK };
+    }
+
+    [HttpGet("{type}")]
+
+    [Authorize]
+    public async Task<JsonResult> GetFeeds(string type)
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
+        }
+        var typeFormatted = type.ToLower().Trim() switch
+        {
+            "dinner" => FeedType.Dinner,
+            "other" => FeedType.Other,
+            "breakfast" => FeedType.Breakfast,
+            "lunch" => FeedType.Lunch,
+            _ => FeedType.Other
+        };
+        var feed = await feedService.GetAllByDateAndType(userId, DateTime.UtcNow.ToString("dd.MM.yyyy"), typeFormatted);
+        return feed.Count == 0 ? 
+            new JsonResult(new { message = "Feed data not found!" }) { StatusCode = 404 } : 
+            new JsonResult(feed) { StatusCode = StatusCodes.Status200OK };
+    }
     
     bool IsValidDate(string dateString)
     {
