@@ -1,4 +1,4 @@
-﻿namespace FitFoodAPI.Models;
+﻿namespace FitFoodAPI.Models.Nutrition;
 
 public class FeedStats
 {

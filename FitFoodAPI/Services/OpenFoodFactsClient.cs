@@ -1,4 +1,5 @@
 ﻿using FitFoodAPI.Models;
+using FitFoodAPI.Models.Nutrition;
 using Newtonsoft.Json;
 using OpenFoodFacts4Net.Json.Data;
 

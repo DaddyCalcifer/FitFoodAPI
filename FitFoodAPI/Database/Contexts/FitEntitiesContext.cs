@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using FitFoodAPI.Models;
+using FitFoodAPI.Models.Fit;
+using FitFoodAPI.Models.Nutrition;
 
 namespace FitFoodAPI.Database.Contexts;
 

@@ -1,5 +1,6 @@
 ﻿using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
+using FitFoodAPI.Models.Fit;
 
 namespace FitFoodAPI.Services.Builders;
 

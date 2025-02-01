@@ -1,6 +1,7 @@
 ﻿using FitFoodAPI.Database.Contexts;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
+using FitFoodAPI.Models.Nutrition;
 using FitFoodAPI.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
+using FitFoodAPI.Models.Nutrition;
 using FitFoodAPI.Models.Requests;
 using FitFoodAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,10 @@ public class FoodController : ControllerBase
             Mass = food.Mass,
             FeedType = typeFormatted
         };
+        
+        if(data.Mass <= 0 || data.Carb100 <= 0 && data.Fat100 <= 0 && data.Protein100 <= 0)
+            return new JsonResult(new {message = "Error - bad data!"}) { StatusCode = StatusCodes.Status400BadRequest };
+        
         await feedService.AddFeed(data);
         return new JsonResult(new {message = "Data addiction success!"}) { StatusCode = StatusCodes.Status201Created };
     }

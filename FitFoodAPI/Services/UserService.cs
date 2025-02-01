@@ -8,6 +8,8 @@ using FitFoodAPI.Models.Enums;
 using FitFoodAPI.Services.Builders;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
+using FitFoodAPI.Models.Fit;
+using FitFoodAPI.Models.Nutrition;
 using FitFoodAPI.Models.Requests;
 using Microsoft.IdentityModel.Tokens;
 

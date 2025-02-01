@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using FitFoodAPI.Models.Fit;
 
 namespace FitFoodAPI.Models;
 

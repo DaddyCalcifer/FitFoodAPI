@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FitFoodAPI.Models;
+namespace FitFoodAPI.Models.Fit;
 
 public class FitPlan
 {

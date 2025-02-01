@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using FitFoodAPI.Models.Enums;
 
-namespace FitFoodAPI.Models;
+namespace FitFoodAPI.Models.Fit;
 
 public class FitData
 {
