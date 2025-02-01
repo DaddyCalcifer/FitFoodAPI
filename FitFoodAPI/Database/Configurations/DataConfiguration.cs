@@ -1,4 +1,5 @@
 ﻿using FitFoodAPI.Models;
+using FitFoodAPI.Models.Fit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

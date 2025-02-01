@@ -3,6 +3,7 @@ using FitFoodAPI.Database;
 using FitFoodAPI.Database.Contexts;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
+using FitFoodAPI.Models.Fit;
 using FitFoodAPI.Services.Builders;
 using Microsoft.EntityFrameworkCore;
 

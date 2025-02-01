@@ -1,4 +1,5 @@
 ﻿using FitFoodAPI.Models;
+using FitFoodAPI.Models.Fit;
 
 namespace FitFoodAPI.Services.Builders;
 

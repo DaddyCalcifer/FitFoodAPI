@@ -1,6 +1,6 @@
 ﻿using FitFoodAPI.Models.Enums;
 
-namespace FitFoodAPI.Models;
+namespace FitFoodAPI.Models.Fit;
 
 public static class FitConsts
 {
