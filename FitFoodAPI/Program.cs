@@ -44,7 +44,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Hello World!");
 app.MapGet("/token", AuthOptions.GetSymmetricSecurityKey);
-app.MapGet("/product/{barcode}", async (string barcode) =>
+app.MapGet("api/product/{barcode}", async (string barcode) =>
 {
     try
     {

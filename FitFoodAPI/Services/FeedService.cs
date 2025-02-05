@@ -185,4 +185,74 @@ public class FeedService
             return sum;
         }
     }
+    public async Task<List<ProductData>?> SearchProducts(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        await using (var context = new FitEntitiesContext())
+        {
+            var products = await context.Products.ToListAsync();
+
+            // Разбиваем запрос на отдельные слова
+            var queryWords = name.ToLower().Split(new[] { ' ', '-', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var filteredProducts = products
+                .Select(p => new
+                {
+                    Product = p,
+                    SimilarityScore = CalculateProductSimilarity(p.Name, queryWords) // Считаем рейтинг похожести
+                })
+                .OrderByDescending(p => p.SimilarityScore) // Сортируем по рейтингу схожести
+                .Take(10) // Оставляем 10 лучших вариантов
+                .Select(p => p.Product)
+                .ToList();
+
+            return filteredProducts.Count == 0 ? null : filteredProducts;
+        }
+    }
+    private int LevenshteinDistance(string s1, string s2)
+    {
+        if (string.IsNullOrEmpty(s1)) return s2.Length;
+        if (string.IsNullOrEmpty(s2)) return s1.Length;
+
+        var d = new int[s1.Length + 1, s2.Length + 1];
+
+        for (int i = 0; i <= s1.Length; i++) d[i, 0] = i;
+        for (int j = 0; j <= s2.Length; j++) d[0, j] = j;
+
+        for (int i = 1; i <= s1.Length; i++)
+        {
+            for (int j = 1; j <= s2.Length; j++)
+            {
+                int cost = s1[i - 1] == s2[j - 1] ? 0 : 1;
+                d[i, j] = Math.Min(
+                    Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+                    d[i - 1, j - 1] + cost);
+            }
+        }
+
+        return d[s1.Length, s2.Length];
+    }
+    private double CalculateProductSimilarity(string productName, string[] queryWords)
+    {
+        var productWords = productName.ToLower().Split(new[] { ' ', '-', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+        double totalScore = 0;
+        int comparisons = 0;
+
+        foreach (var queryWord in queryWords)
+        {
+            double bestMatch = productWords
+                .Select(productWord => 1.0 - (double)LevenshteinDistance(queryWord, productWord) / Math.Max(queryWord.Length, productWord.Length))
+                .Max();
+
+            totalScore += bestMatch;
+            comparisons++;
+        }
+
+        return comparisons > 0 ? totalScore / comparisons : 0;
+    }
 }
