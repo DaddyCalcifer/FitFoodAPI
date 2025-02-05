@@ -157,7 +157,13 @@ public class FoodController : ControllerBase
             new JsonResult(new { message = "Feed data not found!" }) { StatusCode = 404 } : 
             new JsonResult(feed) { StatusCode = StatusCodes.Status200OK };
     }
-    
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProducts([FromQuery] string name)
+    {
+        var result = await feedService.SearchProducts(name);
+        return result == null ? new JsonResult(new { message = "Ничего не найдено!" }) : new JsonResult(result);
+    }
+
     bool IsValidDate(string dateString)
     {
         try
