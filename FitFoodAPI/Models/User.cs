@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FitFoodAPI.Models.Fit;
 using FitFoodAPI.Models.Nutrition;
+using FitFoodAPI.Models.Sport;
 
 namespace FitFoodAPI.Models;
 
@@ -18,4 +19,6 @@ public class User(string username, string password, string email = "")
     public ICollection<FitPlan> Plans { get; set; } = new List<FitPlan>();
     public ICollection<FitData> Datas { get; set; } = new List<FitData>();
     public ICollection<FeedAct> FeedActs { get; set; } = new List<FeedAct>();
+    public ICollection<Training> Trainings { get; set; } = new List<Training>();
+    public ICollection<TrainingPlan> TrainingPlans { get; set; } = new List<TrainingPlan>();
 }

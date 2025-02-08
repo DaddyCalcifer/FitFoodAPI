@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Fit;
 using FitFoodAPI.Models.Nutrition;
+using FitFoodAPI.Models.Sport;
 
 namespace FitFoodAPI.Database.Contexts;
 
@@ -15,12 +16,17 @@ public class FitEntitiesContext : DbContext
     public DbSet<PlanComment> Comments { get; set; }
     public DbSet<FeedAct> FeedActs { get; set; }
     public DbSet<ProductData> Products { get; set; }
+    public DbSet<Training> Trainings { get; set; }
+    public DbSet<TrainingPlan> TrainingPlans { get; set; }
+    public DbSet<Set> Sets { get; set; }
+    public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<ExerciseProgress> ExerciseProgress { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=admin;Password=admin;Database=fitfood_db");
+            optionsBuilder.UseNpgsql("Host=dpg-cuik30d6l47c73ag7bpg-a.frankfurt-postgres.render.com;Port=5432;Username=admin;Password=jiOWiOxESdh6grMdr7qgOhQm4Ub03YsF;Database=fitfood_db");
         }
     }
 
