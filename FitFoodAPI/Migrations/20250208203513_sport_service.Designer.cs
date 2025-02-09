@@ -3,6 +3,7 @@ using System;
 using FitFoodAPI.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitFoodAPI.Migrations
 {
     [DbContext(typeof(FitEntitiesContext))]
-    partial class FitEntitiesContextModelSnapshot : ModelSnapshot
+    [Migration("20250208203513_sport_service")]
+    partial class sport_service
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,7 +271,7 @@ namespace FitFoodAPI.Migrations
 
                     b.HasIndex("TrainingPlanId");
 
-                    b.ToTable("Exercises");
+                    b.ToTable("Exercise");
                 });
 
             modelBuilder.Entity("FitFoodAPI.Models.Sport.ExerciseProgress", b =>
@@ -310,14 +313,11 @@ namespace FitFoodAPI.Migrations
                     b.Property<double>("Weight")
                         .HasColumnType("double precision");
 
-                    b.Property<bool>("isCompleted")
-                        .HasColumnType("boolean");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ExerciseProgressId");
 
-                    b.ToTable("Sets");
+                    b.ToTable("Set");
                 });
 
             modelBuilder.Entity("FitFoodAPI.Models.Sport.Training", b =>
@@ -330,7 +330,7 @@ namespace FitFoodAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("TrainingPlanId")
+                    b.Property<Guid>("TrainigPlanId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UserId")
@@ -338,7 +338,7 @@ namespace FitFoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainingPlanId");
+                    b.HasIndex("TrainigPlanId");
 
                     b.HasIndex("UserId");
 
@@ -365,9 +365,6 @@ namespace FitFoodAPI.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -503,9 +500,9 @@ namespace FitFoodAPI.Migrations
 
             modelBuilder.Entity("FitFoodAPI.Models.Sport.Training", b =>
                 {
-                    b.HasOne("FitFoodAPI.Models.Sport.TrainingPlan", "TrainingPlan")
+                    b.HasOne("FitFoodAPI.Models.Sport.TrainingPlan", "TrainigPlan")
                         .WithMany()
-                        .HasForeignKey("TrainingPlanId")
+                        .HasForeignKey("TrainigPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -515,7 +512,7 @@ namespace FitFoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("TrainingPlan");
+                    b.Navigation("TrainigPlan");
 
                     b.Navigation("User");
                 });

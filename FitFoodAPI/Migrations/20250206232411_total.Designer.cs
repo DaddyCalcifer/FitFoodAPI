@@ -3,6 +3,7 @@ using System;
 using FitFoodAPI.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FitFoodAPI.Migrations
 {
     [DbContext(typeof(FitEntitiesContext))]
-    partial class FitEntitiesContextModelSnapshot : ModelSnapshot
+    [Migration("20250206232411_total")]
+    partial class total
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,150 +235,6 @@ namespace FitFoodAPI.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Exercise", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("RepCaloriesLoss")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("Reps")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("RepsIsSeconds")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Sets")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("TrainingPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingPlanId");
-
-                    b.ToTable("Exercises");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.ExerciseProgress", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ExerciseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TrainingId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("TrainingId");
-
-                    b.ToTable("ExerciseProgress");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Set", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ExerciseProgressId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Reps")
-                        .HasColumnType("double precision");
-
-                    b.Property<byte>("SetNumber")
-                        .HasColumnType("smallint");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("double precision");
-
-                    b.Property<bool>("isCompleted")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseProgressId");
-
-                    b.ToTable("Sets");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Training", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TrainingPlanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainingPlanId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Trainings");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.TrainingPlan", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TrainingPlans");
-                });
-
             modelBuilder.Entity("FitFoodAPI.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -460,95 +319,9 @@ namespace FitFoodAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Exercise", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.Sport.TrainingPlan", "TrainingPlan")
-                        .WithMany("Exercises")
-                        .HasForeignKey("TrainingPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TrainingPlan");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.ExerciseProgress", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.Sport.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitFoodAPI.Models.Sport.Training", "Training")
-                        .WithMany("Exercises")
-                        .HasForeignKey("TrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("Training");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Set", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.Sport.ExerciseProgress", "ExerciseProgress")
-                        .WithMany("Sets")
-                        .HasForeignKey("ExerciseProgressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExerciseProgress");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Training", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.Sport.TrainingPlan", "TrainingPlan")
-                        .WithMany()
-                        .HasForeignKey("TrainingPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitFoodAPI.Models.User", "User")
-                        .WithMany("Trainings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TrainingPlan");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.TrainingPlan", b =>
-                {
-                    b.HasOne("FitFoodAPI.Models.User", "User")
-                        .WithMany("TrainingPlans")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FitFoodAPI.Models.Fit.FitPlan", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.ExerciseProgress", b =>
-                {
-                    b.Navigation("Sets");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.Training", b =>
-                {
-                    b.Navigation("Exercises");
-                });
-
-            modelBuilder.Entity("FitFoodAPI.Models.Sport.TrainingPlan", b =>
-                {
-                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("FitFoodAPI.Models.User", b =>
@@ -558,10 +331,6 @@ namespace FitFoodAPI.Migrations
                     b.Navigation("FeedActs");
 
                     b.Navigation("Plans");
-
-                    b.Navigation("TrainingPlans");
-
-                    b.Navigation("Trainings");
                 });
 #pragma warning restore 612, 618
         }
