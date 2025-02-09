@@ -8,8 +8,10 @@ public class ExerciseProgressConfiguration : IEntityTypeConfiguration<ExercisePr
 {
     public void Configure(EntityTypeBuilder<ExerciseProgress> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.HasMany(x => x.Sets)
-            .WithOne(x => x.ExerciseProgress);
+        builder.HasKey(e => e.Id);
+        builder.HasMany(e => e.Sets)
+            .WithOne()
+            .HasForeignKey(e => e.ExerciseProgressId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

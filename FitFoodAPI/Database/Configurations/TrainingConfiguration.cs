@@ -11,6 +11,7 @@ public class TrainingConfiguration : IEntityTypeConfiguration<Training>
     {
         builder.HasKey(x => x.Id);
         builder.HasMany(x => x.Exercises)
-            .WithOne(x => x.Training);
+            .WithOne(x => x.Training)
+            .OnDelete(DeleteBehavior.Cascade);;
     }
 }

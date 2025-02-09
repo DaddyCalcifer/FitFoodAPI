@@ -127,12 +127,20 @@ public class SportController : ControllerBase
         }
         
         var training = await sportService.CreateTraining(userId, planId);
-        training!.User = null;
+        if(training == null) return new JsonResult(new { message = "Ошибка при создании тренировки!" }){ StatusCode = StatusCodes.Status400BadRequest };
         
-        Console.WriteLine($"Training {training.Id} has been built for user {userId}");
+        var trainingId = await sportService.AddExercisesToTraining(training.Id);
+        if(trainingId == null) return new JsonResult(new { message = "Ошибка при загрузке списка упражнений!" }){ StatusCode = StatusCodes.Status400BadRequest };
+        
+        trainingId = await sportService.AddSetsToTraining(training.Id);
+        if(trainingId == null) return new JsonResult(new { message = "Ошибка при добавлении подходов!" }){ StatusCode = StatusCodes.Status400BadRequest };
+        
+        training.User = null;
+        
+        Console.WriteLine($"Тренировка {training.Id} создана для пользователя {userId}");
         return new JsonResult(training){ StatusCode = StatusCodes.Status201Created };
     }
-    [HttpDelete("trainings/{planId:guid}/delete")]
+    [HttpDelete("trainings/{trainingId:guid}/delete")]
     [Authorize]
     public async Task<JsonResult> DeleteTraining(Guid trainingId)
     {

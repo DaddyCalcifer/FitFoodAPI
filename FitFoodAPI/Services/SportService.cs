@@ -118,8 +118,16 @@ public class SportService
     }
     
     //Тренировки
+    //Создание тренировки
     public async Task<Training?> CreateTraining(Guid userId, Guid trainingPlanId)
     {
+        await using var context = new FitEntitiesContext();
+        
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null) return null;
+        
         var training = new Training()
         {
             Id = Guid.NewGuid(),
@@ -127,62 +135,88 @@ public class SportService
             TrainingPlanId = trainingPlanId
         };
 
+        context.Trainings.Add(training);
+
+        await context.SaveChangesAsync();
+
+        return training;
+    }
+    //Добавление упражнений
+    public async Task<Guid?> AddExercisesToTraining(Guid trainingId)
+    {
         await using var context = new FitEntitiesContext();
-        
-        var plan = await context.TrainingPlans
+
+        var training = await context.Trainings
             .Include(e => e.Exercises)
-            .FirstOrDefaultAsync(e => e.Id == trainingPlanId);
-        foreach (var exerc in plan!.Exercises)
+            .Include(e => e.TrainingPlan).ThenInclude(trainingPlan => trainingPlan!.Exercises)
+            .FirstOrDefaultAsync(e => e.Id == trainingId);
+
+        if (training?.TrainingPlan == null)
         {
-            var exercise = new ExerciseProgress()
+            return null;
+        }
+
+        foreach (var exercise in training.TrainingPlan.Exercises)
+        {
+            context.ExerciseProgress.Add(new ExerciseProgress()
             {
-                Id = Guid.NewGuid(),
-                ExerciseId = exerc.Id,
-                TrainingId = training.Id
-            };
-            for (int i = 0; i < exerc.Sets; i++)
+                ExerciseId = exercise.Id,
+                TrainingId = trainingId,
+            });
+        }
+        await context.SaveChangesAsync();
+
+        return training.Id;
+    }
+    public async Task<Guid?> AddSetsToTraining(Guid trainingId)
+    {
+        await using var context = new FitEntitiesContext();
+
+        var training = await context.Trainings
+            .Include(e => e.Exercises)
+            .Include(e => e.TrainingPlan).ThenInclude(trainingPlan => trainingPlan!.Exercises)
+            .FirstOrDefaultAsync(e => e.Id == trainingId);
+
+        if (training?.TrainingPlan == null)
+        {
+            return null;
+        }
+
+        foreach (var exercise in training.Exercises)
+        {
+            var exerc = training.TrainingPlan.Exercises
+                .FirstOrDefault(e => e.Id == exercise.ExerciseId);
+
+            if (exerc == null)
             {
-                exercise.Sets.Add(new Set()
+                continue; // Пропускаем, если упражнение не найдено
+            }
+
+            for (var i = 0; i < exerc.Sets; i++)
+            {
+                context.Sets.Add(new Set()
                 {
-                    SetNumber = (byte)(i+1),
+                    Id = Guid.NewGuid(),
+                    SetNumber = (byte)(i + 1),
                     ExerciseProgressId = exercise.Id,
                     Reps = exerc.Reps,
                     Weight = exerc.Weight,
                     isCompleted = false
                 });
             }
-            training.Exercises.Add(exercise);
         }
-        
-        var user = await context.Users
-            .Include(u => u.Trainings)
-            .FirstOrDefaultAsync(c => c.Id == userId);
-            
-        if (user == null) return null;
-            
-        user.Trainings.Add(training);
-        context.Users.Update(user);
-            
         await context.SaveChangesAsync();
 
-        return training;
+        return training.Id;
     }
-    
+
     public async Task<bool> DeleteTraining(Guid trainingId, Guid userId)
     {
         await using var context = new FitEntitiesContext();
-        var training = await context.Trainings.Include(training => training.Exercises).FirstOrDefaultAsync(c => c.Id == trainingId);
+        var training = await context.Trainings.FirstOrDefaultAsync(c => c.Id == trainingId);
             
         if (training == null) return false;
         if (training.UserId != userId) return false;
-
-        foreach (var exercise in training.Exercises)
-        {
-            training.Exercises!.Remove(exercise);
-        }
-        
-        context.Trainings.Update(training);
-        await context.SaveChangesAsync();
         
         context.Trainings.Remove(training);
         await context.SaveChangesAsync();
@@ -192,10 +226,19 @@ public class SportService
     public async Task<Training?> GetTraining(Guid trainingId, Guid userId)
     {
         await using var context = new FitEntitiesContext();
+        
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        if(user == null) return null;
+        
         var training = await context.Trainings
             .Include(t => t.Exercises)
+                .ThenInclude(e => e.Sets)
             .FirstOrDefaultAsync(e => e.Id == trainingId);
-        return training!.UserId != userId ? null : training;
+        if(training == null) return null;
+        
+        training.User = null;
+        return training.UserId != userId ? null : training;
     }
     public async Task<List<Training>> GetTrainings(Guid userId)
     {
@@ -203,7 +246,7 @@ public class SportService
     
         var trainings = await context.Trainings
             .Where(e => e.UserId == userId)
-            .Include(t => t.Exercises)
+            .Include(t => t.Exercises).ThenInclude(t => t.Sets)
             .ToListAsync();
     
         return trainings;
@@ -222,6 +265,10 @@ public class SportService
         set!.Reps = reps;
         set!.Weight = weight;
         set!.isCompleted = true;
+
+        context.Sets.Update(set);
+        await context.SaveChangesAsync();
+        
         return set;
     }
 }
