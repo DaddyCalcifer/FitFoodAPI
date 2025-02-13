@@ -101,15 +101,14 @@ public class SportService
         var plan = await context.TrainingPlans
             .Include(e => e.Exercises)
             .FirstOrDefaultAsync(e => e.Id == planId);
-        if(plan!.UserId != userId || plan.isDeleted) return null;
-        return plan;
+        return plan!.isDeleted ? null : plan;
     }
     public async Task<List<TrainingPlan>> GetPlans(Guid userId)
     {
         await using var context = new FitEntitiesContext();
     
         var plans = await context.TrainingPlans
-            .Where(e => e.UserId == userId && !e.isDeleted)
+            .Where(e => !e.isDeleted)
             .Include(e => e.Exercises)
             .AsNoTracking()
             .ToListAsync();
@@ -232,12 +231,29 @@ public class SportService
         if(user == null) return null;
         
         var training = await context.Trainings
+            .Include(t => t.TrainingPlan)
             .Include(t => t.Exercises)
-                .ThenInclude(e => e.Sets)
+                .ThenInclude(e => e.Sets.OrderBy(s => s.SetNumber))
+            .Include(t => t.Exercises)
+                .ThenInclude(t => t.Exercise)
             .FirstOrDefaultAsync(e => e.Id == trainingId);
         if(training == null) return null;
         
         training.User = null;
+        if (training.TrainingPlan != null)
+        {
+            training.TrainingPlan.User = null;
+            training.TrainingPlan.Exercises = [];
+        }
+
+        if (training.Exercises.Count > 0)
+        {
+            foreach (var exe in training.Exercises)
+            {
+                exe.Exercise!.TrainingPlan = null;
+            }
+        }
+
         return training.UserId != userId ? null : training;
     }
     public async Task<List<Training>> GetTrainings(Guid userId)
@@ -245,10 +261,30 @@ public class SportService
         await using var context = new FitEntitiesContext();
     
         var trainings = await context.Trainings
+            .Include(t => t.TrainingPlan)
             .Where(e => e.UserId == userId)
-            .Include(t => t.Exercises).ThenInclude(t => t.Sets)
+            .Include(t => t.Exercises)
+                .ThenInclude(t => t.Sets.OrderBy(s=>s.SetNumber))
+            .Include(t => t.Exercises)
+                .ThenInclude(t => t.Exercise)
             .ToListAsync();
-    
+
+        foreach (var training in trainings)
+        {
+            training.User = null;
+            if (training.TrainingPlan != null)
+            {
+                training.TrainingPlan.User = null;
+                training.TrainingPlan.Exercises = [];
+            }
+            if (training.Exercises.Count > 0)
+            {
+                foreach (var exe in training.Exercises)
+                {
+                    exe.Exercise!.TrainingPlan = null;
+                }
+            }
+        }
         return trainings;
     }
     
@@ -265,7 +301,7 @@ public class SportService
         set!.Reps = reps;
         set!.Weight = weight;
         set!.isCompleted = true;
-
+    
         context.Sets.Update(set);
         await context.SaveChangesAsync();
         
