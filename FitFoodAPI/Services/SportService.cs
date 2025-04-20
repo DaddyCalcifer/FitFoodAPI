@@ -103,6 +103,29 @@ public class SportService
             .FirstOrDefaultAsync(e => e.Id == planId);
         return plan!.isDeleted ? null : plan;
     }
+    public async Task<Guid?> FindPlanByCalories(int targetCalories)
+    {
+        await using var context = new FitEntitiesContext();
+
+        var plans = await context.TrainingPlans
+            .Where(p => !p.isDeleted)
+            .Select(p => new
+            {
+                p.Id,
+                p.CaloriesLoss
+            })
+            .ToListAsync();
+
+        if (plans.Count == 0)
+            return null;
+
+        // Находим план с минимальной разницей между CaloriesLoss и целевым значением
+        var closestPlan = plans
+            .OrderBy(p => Math.Abs(p.CaloriesLoss - targetCalories))
+            .First();
+
+        return closestPlan.Id;
+    }
     public async Task<List<TrainingPlan>> GetPlans(Guid userId)
     {
         await using var context = new FitEntitiesContext();
