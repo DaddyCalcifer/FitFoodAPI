@@ -103,6 +103,7 @@ public class FoodController : ControllerBase
             "other" => FeedType.Other,
             "breakfast" => FeedType.Breakfast,
             "lunch" => FeedType.Lunch,
+            "burnt" => FeedType.Training,
             _ => FeedType.Other
         };
 

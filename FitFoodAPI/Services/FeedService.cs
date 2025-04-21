@@ -138,6 +138,7 @@ public class FeedService
                 AteLunch = getEatingsKcal(userId, date, FeedType.Lunch),
                 AteBreakfast = getEatingsKcal(userId, date, FeedType.Breakfast),
                 AteOther = getEatingsKcal(userId, date, FeedType.Other),
+                BurntKcal = getEatingsKcal(userId, date, FeedType.Training),
             };
         }
     }

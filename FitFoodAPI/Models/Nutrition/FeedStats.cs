@@ -10,4 +10,5 @@ public class FeedStats
     public double AteLunch { get; set; }
     public double AteBreakfast { get; set; }
     public double AteOther { get; set; }
+    public double BurntKcal { get; set; }
 }
