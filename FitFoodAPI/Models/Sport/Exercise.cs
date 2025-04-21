@@ -13,5 +13,5 @@ public class Exercise
     public double RepCaloriesLoss { get; set; } = 0.0;
     public bool RepsIsSeconds { get; set; } = false;
     
-    public double TotalCaloriesLoss => RepCaloriesLoss * (Sets * Reps);
+    public double TotalCaloriesLoss => RepCaloriesLoss;
 }

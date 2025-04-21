@@ -26,7 +26,8 @@ public class FitEntitiesContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=dpg-cuik30d6l47c73ag7bpg-a.frankfurt-postgres.render.com;Port=5432;Username=admin;Password=jiOWiOxESdh6grMdr7qgOhQm4Ub03YsF;Database=fitfood_db");
+            //optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=admin;Password=admin;Database=fitfood_db");
+            optionsBuilder.UseNpgsql("Host=dpg-d02m5ijuibrs73b1hd10-a.frankfurt-postgres.render.com;Port=5432;Username=admin;Password=F7pIV7sBgzs8NzzXAqsoQa4fPE0V7vYw;Database=fitfood_db_ymbb");
         }
     }
 

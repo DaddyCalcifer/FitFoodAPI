@@ -4,6 +4,7 @@ using FitFoodAPI.Database.Contexts;
 using FitFoodAPI.Models;
 using FitFoodAPI.Models.Enums;
 using FitFoodAPI.Models.Fit;
+using FitFoodAPI.Models.Nutrition;
 using FitFoodAPI.Models.Requests;
 using FitFoodAPI.Models.Sport;
 using FitFoodAPI.Services.Builders;
@@ -102,6 +103,29 @@ public class SportService
             .Include(e => e.Exercises)
             .FirstOrDefaultAsync(e => e.Id == planId);
         return plan!.isDeleted ? null : plan;
+    }
+    public async Task<Guid?> FindPlanByCalories(int targetCalories)
+    {
+        await using var context = new FitEntitiesContext();
+
+        var plans = await context.TrainingPlans
+            .Where(p => !p.isDeleted)
+            .Select(p => new
+            {
+                p.Id,
+                p.CaloriesLoss
+            })
+            .ToListAsync();
+
+        if (plans.Count == 0)
+            return null;
+
+        // Находим план с минимальной разницей между CaloriesLoss и целевым значением
+        var closestPlan = plans
+            .OrderBy(p => Math.Abs(p.CaloriesLoss - targetCalories))
+            .First();
+
+        return closestPlan.Id;
     }
     public async Task<List<TrainingPlan>> GetPlans(Guid userId)
     {
@@ -296,6 +320,7 @@ public class SportService
         var set = await context.Sets
             .Where(e => e.Id == setId)
             .Include(s => s.ExerciseProgress)
+            .ThenInclude(ep => ep!.Exercise)
             .FirstOrDefaultAsync();
         
         set!.Reps = reps;
@@ -303,6 +328,20 @@ public class SportService
         set!.isCompleted = true;
     
         context.Sets.Update(set);
+
+        var setAct = new FeedAct();
+        if (set.ExerciseProgress is { Exercise: not null })
+        {
+            setAct.UserId = userId;
+            setAct.Carb100 = setAct.Fat100 = setAct.Protein100 = 0.1;
+            setAct.Mass = 100;
+            setAct.Kcal100 = (set.ExerciseProgress.Exercise.TotalCaloriesLoss / set.ExerciseProgress.Exercise.Sets) * -1.0;
+            setAct.FeedType = FeedType.Training;
+            setAct.Date = DateTime.UtcNow.ToString("dd.MM.yyyy");
+            setAct.Name = $"[Тренировка] {set.ExerciseProgress.Exercise.Name}";
+        }
+        context.FeedActs.Add(setAct);
+        
         await context.SaveChangesAsync();
         
         return set;
