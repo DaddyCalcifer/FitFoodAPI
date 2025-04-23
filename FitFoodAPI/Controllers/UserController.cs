@@ -97,8 +97,14 @@ public partial class UserController : ControllerBase
         }
         data.UserId = userId;
 
-        await _service.UpdatePassword(data);
-        return new JsonResult(new {message = "Data was updated!"}) { StatusCode = StatusCodes.Status205ResetContent };
+        var result = await _service.UpdatePassword(data);
+        if (result)
+        {
+            return new JsonResult(new { message = "Data was updated!" })
+                { StatusCode = StatusCodes.Status200OK };
+        }
+        return new JsonResult(new { message = "Data was not updated!" })
+            { StatusCode = StatusCodes.Status401Unauthorized };
     }
 
     [HttpGet]
