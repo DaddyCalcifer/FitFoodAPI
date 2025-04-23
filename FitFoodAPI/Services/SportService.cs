@@ -311,6 +311,42 @@ public class SportService
         }
         return trainings;
     }
+    public async Task<int> GetDailyTrainingProgress(Guid userId)
+    {
+        await using var context = new FitEntitiesContext();
+        var today = DateTime.UtcNow.ToString("dd.MM.yyyy");
+
+        // Получаем тренировки пользователя за сегодня
+        var todaysTrainings = await context.Trainings
+            .Where(t => t.UserId == userId && t.Date == today)
+            .Include(t => t.Exercises)
+            .ThenInclude(e => e.Sets)
+            .ToListAsync();
+
+        int totalSets = 0;
+        int completedSets = 0;
+
+        foreach (var training in todaysTrainings)
+        {
+            foreach (var exercise in training.Exercises)
+            {
+                foreach (var set in exercise.Sets)
+                {
+                    totalSets++;
+                    if (set.isCompleted) // Предполагается, что в Set есть булевое поле IsCompleted
+                        completedSets++;
+                }
+            }
+        }
+
+        if (totalSets == 0)
+            return -1;
+
+        // Вычисляем процент выполнения
+        var percent = (int)((double)completedSets / totalSets * 100);
+        return percent;
+    }
+
     
     //Подходы
     public async Task<Set?> CompleteSet(Guid userId, Guid setId, int reps, double weight)
@@ -335,7 +371,7 @@ public class SportService
             setAct.UserId = userId;
             setAct.Carb100 = setAct.Fat100 = setAct.Protein100 = 0.1;
             setAct.Mass = 100;
-            setAct.Kcal100 = (set.ExerciseProgress.Exercise.TotalCaloriesLoss / set.ExerciseProgress.Exercise.Sets) * -1.0;
+            setAct.Kcal100 = (set.ExerciseProgress.Exercise.TotalCaloriesLoss / set.ExerciseProgress.Exercise.Sets);
             setAct.FeedType = FeedType.Training;
             setAct.Date = DateTime.UtcNow.ToString("dd.MM.yyyy");
             setAct.Name = $"[Тренировка] {set.ExerciseProgress.Exercise.Name}";

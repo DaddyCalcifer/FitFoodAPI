@@ -60,12 +60,11 @@ public class UserService()
             if (BCrypt.Net.BCrypt.Verify(request.OldPassword, user.Password))
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+                return true;
             }
-            else return false;
-            
-            context.Users.Update(user);
-            await context.SaveChangesAsync();
-            return true;
+            return false;
         }
     }
 

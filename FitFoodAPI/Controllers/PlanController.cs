@@ -101,6 +101,7 @@ public class PlanController : ControllerBase
         }
         
         var plan = await _planCalculatorService.GetPlan(planId, userId);
+        
         return plan == null ? 
             new JsonResult(new { message = "Plan not found!" }) { StatusCode = 404 } : 
             new JsonResult(plan) { StatusCode = StatusCodes.Status200OK };

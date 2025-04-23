@@ -98,6 +98,19 @@ public class SportController : ControllerBase
             new JsonResult(new { message = "Программа тренировки не найдена!" }) { StatusCode = 404 } : 
             new JsonResult(plan) { StatusCode = StatusCodes.Status200OK };
     }
+    [HttpGet("plans/daily")]
+    [Authorize]
+    public async Task<JsonResult> GetDailyProgress()
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.Sid);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return new JsonResult(new { message = "Token is incorrect!" }) { StatusCode = 401 };
+        }
+        
+        var result = await sportService.GetDailyTrainingProgress(userId);
+        return new JsonResult(result) { StatusCode = StatusCodes.Status200OK };
+    }
     [HttpGet("plans/kcal:{kcal:int}")]
     [Authorize]
     public async Task<JsonResult> GetByKcal(int kcal)

@@ -112,7 +112,7 @@ public class FeedService
         await using (var context = new FitEntitiesContext())
         {
             var query = context.FeedActs
-                .Where(c => c.UserId == userId && c.Date == date.Trim());
+                .Where(c => c.UserId == userId && c.Date == date.Trim() && c.FeedType != FeedType.Training);
 
             double protein = 0.0, carb = 0.0, fat = 0.0, kcal = 0.0;
 
